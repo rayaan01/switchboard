@@ -68,6 +68,16 @@ func router(args []string) ([]byte, error) {
 			return nil, err
 		}
 		return append(response, []byte("\n")...), nil
+	case "del":
+		if len(args) != 2 {
+			return errorMessage, nil
+		}
+		key := args[1]
+		response, err := handleDel(key)
+		if err != nil {
+			return nil, err
+		}
+		return append(response, []byte("\n")...), nil
 	case "exit":
 		return nil, io.EOF
 	default:
@@ -90,11 +100,20 @@ func read(buffer *[]byte, bytesRead *int, conn net.Conn) error {
 	}
 }
 
+func handleGet(key string) ([]byte, error) {
+	value, ok := Store[key]
+	if !ok {
+		return []byte("(nil)"), nil
+	}
+	return []byte(value), nil
+}
+
 func handleSet(key string, value string) ([]byte, error) {
 	Store[key] = value
 	return []byte("OK"), nil
 }
 
-func handleGet(key string) ([]byte, error) {
-	return []byte(Store[key]), nil
+func handleDel(key string) ([]byte, error) {
+	delete(Store, key)
+	return []byte("OK"), nil
 }
