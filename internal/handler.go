@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var Store map[string]string = map[string]string{}
+
 func Handler(conn net.Conn, s *Server) {
 	for {
 		buffer := make([]byte, 0, 1028)
@@ -79,9 +81,10 @@ func read(buffer *[]byte, bytesRead *int, conn net.Conn) error {
 }
 
 func handleSet(key string, value string) ([]byte, error) {
+	Store[key] = value
 	return []byte("OK"), nil
 }
 
 func handleGet(key string) ([]byte, error) {
-	return []byte("value"), nil
+	return []byte(Store[key]), nil
 }
