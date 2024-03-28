@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var Store map[string]string = map[string]string{}
+var Store = map[string]string{}
 
 func Handler(conn net.Conn, s *Server) {
 	for {
