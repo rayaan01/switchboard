@@ -1,4 +1,4 @@
-package internal
+package db
 
 func handleGet(key string) ([]byte, error) {
 	value, ok := Store[key]
