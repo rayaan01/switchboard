@@ -6,7 +6,7 @@ import (
 )
 
 func router(args []string) ([]byte, error) {
-	errorMessage := []byte("Available commands:\n1. set [key] [value]\n2. get [key]\n3. exit \n")
+	errorMessage := []byte("Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit")
 	if len(args) == 0 {
 		return errorMessage, nil
 	}

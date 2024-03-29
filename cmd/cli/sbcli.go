@@ -12,6 +12,7 @@ func welcomePrompt() {
 	fmt.Println("1. set [key] [value]")
 	fmt.Println("2. get [key]")
 	fmt.Println("3. del [key]")
+	fmt.Println("4. exit")
 }
 
 func displayWrapper(text string) {
