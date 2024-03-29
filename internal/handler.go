@@ -14,7 +14,7 @@ func Handler(conn net.Conn, s *Server) {
 		buffer := make([]byte, 0, 1028)
 		bytesRead := 0
 		clientAddress := conn.RemoteAddr().String()
-		err := read(&buffer, &bytesRead, conn)
+		err := readCommand(&buffer, &bytesRead, conn)
 		if err != nil {
 			if err == io.EOF {
 				conn.Close()
@@ -40,7 +40,7 @@ func Handler(conn net.Conn, s *Server) {
 	}
 }
 
-func read(buffer *[]byte, bytesRead *int, conn net.Conn) error {
+func readCommand(buffer *[]byte, bytesRead *int, conn net.Conn) error {
 	for {
 		chunk := make([]byte, 128)
 		n, err := conn.Read(chunk)
