@@ -9,7 +9,6 @@ import (
 
 func main() {
 	cli.WelcomePrompt()
-	cli.DisplayWrapper("")
 	reader := bufio.NewScanner(os.Stdin)
 	for reader.Scan() {
 		input := reader.Text()
