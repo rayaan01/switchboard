@@ -24,7 +24,7 @@ func Handler(conn net.Conn, s *Server) {
 			conn.Write([]byte("Something went wrong!"))
 			continue
 		}
-		input := string(buffer[:bytesRead-1])
+		input := string(buffer[:bytesRead])
 		args := strings.Fields(input)
 		response, err := router(args)
 		if err != nil {
