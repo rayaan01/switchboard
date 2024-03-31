@@ -1,25 +1,63 @@
 package cli
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
+	"io"
+	"net"
 	"strings"
 )
 
-func Parser(input string) {
+func Parser(input string) (string, error) {
 	args := strings.Fields(input)
+	serializedCmd := strings.Join(args, " ")
 	if len(args) == 0 {
-		displayUsageMessage()
-		return
+		return getUsageMessage(), nil
 	}
+
 	cmd := args[0]
 	switch cmd {
 	case "set":
-		fmt.Println("Set command is called")
-	case "get":
-		fmt.Println("Get command is called")
-	case "del":
-		fmt.Println("Del command is called")
+		if len(args) != 3 {
+			return getUsageMessage(), nil
+		}
+	case "get", "del":
+		if len(args) != 2 {
+			return getUsageMessage(), nil
+		}
 	case "exit":
-		fmt.Println("Exit command is called")
+		return "", io.EOF
+	case "default":
+		return getUsageMessage(), nil
 	}
+
+	response, err := sendCommand(serializedCmd)
+	if err != nil {
+		return "", err
+	}
+	return response, nil
+}
+
+func sendCommand(cmd string) (string, error) {
+	conn, err := net.Dial("tcp", "localhost:8080")
+	if err != nil {
+		msg := fmt.Sprintf("%s %s", "Could not connect to server", err)
+		return "", errors.New(msg)
+	}
+	bytesWritten, err := fmt.Fprint(conn, cmd)
+	fmt.Println("Bytes written - ", bytesWritten)
+	if err != nil {
+		msg := fmt.Sprintf("%s %s", "Could not write to connection", err)
+		return "", errors.New(msg)
+	}
+	response, err := bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		if err != io.EOF {
+			msg := fmt.Sprintf("%s %s", "Connection interrupted by server", err)
+			return "", errors.New(msg)
+		}
+		return "", io.EOF
+	}
+	return response, nil
 }

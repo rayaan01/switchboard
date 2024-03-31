@@ -9,10 +9,10 @@ func WelcomePrompt() {
 	fmt.Println("2. get [key]")
 	fmt.Println("3. del [key]")
 	fmt.Println("4. exit")
-	displayWrapper("")
+	DisplayWrapper("")
 }
 
-func displayWrapper(text string) {
+func DisplayWrapper(text string) {
 	fmt.Printf("%s %s", "switchboard >>", text)
 }
 
@@ -21,5 +21,10 @@ func displayUsageMessage() {
 	fmt.Println("1. set [key] [value]")
 	fmt.Println("2. get [key]")
 	fmt.Println("3. del [key]")
-	fmt.Println("3. exit")
+	fmt.Println("4. exit")
+}
+
+func getUsageMessage() string {
+	msg := "Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit"
+	return msg
 }
