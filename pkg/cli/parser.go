@@ -45,8 +45,7 @@ func sendCommand(cmd string) (string, error) {
 		msg := fmt.Sprintf("%s %s", "Could not connect to server", err)
 		return "", errors.New(msg)
 	}
-	bytesWritten, err := fmt.Fprint(conn, cmd)
-	fmt.Println("Bytes written - ", bytesWritten)
+	_, err = fmt.Fprint(conn, cmd)
 	if err != nil {
 		msg := fmt.Sprintf("%s %s", "Could not write to connection", err)
 		return "", errors.New(msg)

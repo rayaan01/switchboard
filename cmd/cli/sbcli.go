@@ -24,5 +24,6 @@ func main() {
 			continue
 		}
 		cli.DisplayWrapper(response)
+		cli.DisplayWrapper("")
 	}
 }
