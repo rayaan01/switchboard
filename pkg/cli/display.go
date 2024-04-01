@@ -9,10 +9,10 @@ func WelcomePrompt() {
 	fmt.Println("2. get [key]")
 	fmt.Println("3. del [key]")
 	fmt.Println("4. exit")
-	DisplayWrapper("")
+	displayWrapper("")
 }
 
-func DisplayWrapper(text string) {
+func displayWrapper(text string) {
 	fmt.Printf("%s %s", "switchboard >>", text)
 }
 

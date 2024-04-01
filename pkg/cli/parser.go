@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func Parser(input string) (string, error) {
+func parser(client *Client, input string) (string, error) {
 	args := strings.Fields(input)
 	serializedCmd := strings.Join(args, " ")
 	if len(args) == 0 {
