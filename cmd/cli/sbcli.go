@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bufio"
+	"flag"
 	"fmt"
-	"io"
 	"os"
 
 	"switchboard/pkg/cli"
@@ -11,19 +10,12 @@ import (
 
 func main() {
 	cli.WelcomePrompt()
-	reader := bufio.NewScanner(os.Stdin)
-	for reader.Scan() {
-		input := reader.Text()
-		response, err := cli.Parser(input)
-		if err != nil {
-			if err == io.EOF {
-				fmt.Println("The connection has been closed. Thank you!")
-				return
-			}
-			fmt.Println(err)
-			continue
-		}
-		cli.DisplayWrapper(response)
-		cli.DisplayWrapper("")
+	host := flag.String("h", "localhost", "Host to connect to")
+	port := flag.String("p", "8080", "Port to connect to")
+	client, err := cli.CreateClient(host, port)
+	if err != nil {
+		fmt.Printf("%s %s \n", "Could not connect to server", err)
+		os.Exit(-1)
 	}
+	client.HandleConnection()
 }
