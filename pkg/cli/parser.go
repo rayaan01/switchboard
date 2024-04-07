@@ -5,11 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
 	"strings"
 )
 
-func parser(input string) (string, error) {
+func (c *Client) parser(input string) (string, error) {
 	args := strings.Fields(input)
 	serializedCmd := strings.Join(args, " ")
 	if len(args) == 0 {
@@ -32,25 +31,20 @@ func parser(input string) (string, error) {
 		return getUsageMessage(), nil
 	}
 
-	response, err := sendCommand(serializedCmd)
+	response, err := c.sendCommand(serializedCmd)
 	if err != nil {
 		return "", err
 	}
 	return response, nil
 }
 
-func sendCommand(cmd string) (string, error) {
-	conn, err := net.Dial("tcp", "localhost:8080")
-	if err != nil {
-		msg := fmt.Sprintf("%s %s", "Could not connect to server", err)
-		return "", errors.New(msg)
-	}
-	_, err = fmt.Fprint(conn, cmd)
+func (c *Client) sendCommand(cmd string) (string, error) {
+	_, err := fmt.Fprint(c.conn, cmd)
 	if err != nil {
 		msg := fmt.Sprintf("%s %s", "Could not write to connection", err)
 		return "", errors.New(msg)
 	}
-	response, err := bufio.NewReader(conn).ReadString('\n')
+	response, err := bufio.NewReader(c.conn).ReadString('\n')
 	if err != nil {
 		if err != io.EOF {
 			msg := fmt.Sprintf("%s %s", "Connection interrupted by server", err)

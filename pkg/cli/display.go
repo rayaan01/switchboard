@@ -17,6 +17,6 @@ func displayWrapper(text string) {
 }
 
 func getUsageMessage() string {
-	msg := "Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit"
+	msg := "Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit\n"
 	return msg
 }
