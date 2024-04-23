@@ -36,7 +36,8 @@ func (c *Client) HandleConnection() {
 			fmt.Println(err)
 			continue
 		}
-		displayWrapper(response)
+		wrappedResponse := string(append(response, []byte("\n")...))
+		displayWrapper(wrappedResponse)
 		displayWrapper("")
 	}
 }

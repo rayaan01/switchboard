@@ -16,7 +16,7 @@ func displayWrapper(text string) {
 	fmt.Printf("%s %s", "switchboard >>", text)
 }
 
-func getUsageMessage() string {
-	msg := "Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit\n"
-	return msg
+func getUsageMessage() []byte {
+	msg := "Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit"
+	return []byte(msg)
 }

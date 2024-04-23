@@ -22,7 +22,7 @@ func router(args []string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		return append(response, []byte("\n")...), nil
+		return response, nil
 	case "get":
 		if len(args) != 2 {
 			return errorMessage, nil
@@ -32,7 +32,7 @@ func router(args []string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		return append(response, []byte("\n")...), nil
+		return response, nil
 	case "del":
 		if len(args) != 2 {
 			return errorMessage, nil
@@ -42,7 +42,7 @@ func router(args []string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		return append(response, []byte("\n")...), nil
+		return response, nil
 	case "exit":
 		return nil, io.EOF
 	default:
