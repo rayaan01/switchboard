@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func (c *Client) parser(input string) (string, error) {
@@ -27,6 +29,9 @@ func (c *Client) parser(input string) (string, error) {
 		}
 	case "exit":
 		return "", io.EOF
+	case "CreateAccessKey":
+		accessKey := uuid.NewString()
+		return accessKey + "\n", nil
 	case "default":
 		return getUsageMessage(), nil
 	}
