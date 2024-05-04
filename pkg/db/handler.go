@@ -9,7 +9,7 @@ import (
 
 func Handler(conn net.Conn, s *Server) {
 	for {
-		buffer := make([]byte, 0, 1028)
+		buffer := make([]byte, 0, 1024)
 		bytesRead := 0
 		clientAddress := conn.RemoteAddr().String()
 		err := readCommand(&buffer, &bytesRead, conn)

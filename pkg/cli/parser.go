@@ -1,13 +1,10 @@
 package cli
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"io"
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 func (c *Client) parser(input string) ([]byte, error) {
@@ -27,11 +24,12 @@ func (c *Client) parser(input string) ([]byte, error) {
 		if len(args) != 2 {
 			return getUsageMessage(), nil
 		}
+	case "create-access-key":
+		if len(args) != 2 {
+			return getUsageMessage(), nil
+		}
 	case "exit":
 		return nil, io.EOF
-	case "CreateAccessKey":
-		accessKey := []byte(uuid.NewString())
-		return accessKey, nil
 	case "default":
 		return getUsageMessage(), nil
 	}
@@ -50,27 +48,20 @@ func (c *Client) sendCommand(cmd string) ([]byte, error) {
 		msg := fmt.Sprintf("%s %s", "Could not write to connection", err)
 		return nil, errors.New(msg)
 	}
-	response := make([]byte, 0, 128)
+
+	response := make([]byte, 0, 1024)
 	bytesRead := 0
 	err = c.readResponse(&response, &bytesRead)
 	if err != nil {
-		fmt.Printf("Could not read response: %s", err)
-		return []byte("Something went wrong!"), nil
-	}
-	if err != nil {
-		if err != io.EOF {
-			msg := fmt.Sprintf("%s %s", "Connection interrupted by server", err)
-			return nil, errors.New(msg)
-		}
-		return nil, io.EOF
+		return nil, err
 	}
 	return response[:bytesRead], nil
 }
 
 func (c *Client) readResponse(responseBuffer *[]byte, bytesRead *int) error {
 	for {
-		chunk := make([]byte, 32)
-		n, err := bufio.NewReader(c.conn).Read(chunk)
+		chunk := make([]byte, 128)
+		n, err := c.conn.Read(chunk)
 		if err != nil {
 			return err
 		}

@@ -11,3 +11,15 @@ type AVLTreeNode struct {
 type AVLTree struct {
 	store AVLTreeNode
 }
+
+func (at *AVLTree) get(key string) ([]byte, error) {
+	return []byte("OK"), nil
+}
+
+func (at *AVLTree) set(key string, value string) ([]byte, error) {
+	return []byte("OK"), nil
+}
+
+func (at *AVLTree) del(key string) ([]byte, error) {
+	return []byte("OK"), nil
+}
