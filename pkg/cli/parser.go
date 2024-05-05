@@ -1,11 +1,18 @@
 package cli
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 )
+
+type Request struct {
+	Key string `json:"key"`
+	Cmd string `json:"cmd"`
+}
 
 func (c *Client) parser(input string) ([]byte, error) {
 	args := strings.Fields(input)
@@ -31,6 +38,39 @@ func (c *Client) parser(input string) ([]byte, error) {
 		if args[1] != "HashTable" && args[1] != "AVLTree" {
 			return getUsageMessage(), nil
 		}
+	case "use":
+		if len(args) != 2 {
+			return getUsageMessage(), nil
+		}
+		accessKey := args[1]
+		existingKeys, err := os.ReadFile("keys.json")
+
+		if err != nil {
+			keyStructure := map[string]bool{accessKey: true}
+			marshalledKey, err := json.Marshal(keyStructure)
+			if err != nil {
+				return nil, err
+			}
+			os.WriteFile("keys.json", marshalledKey, 0644)
+			return []byte("OK"), nil
+		}
+
+		var unmarshalledKeys map[string]bool
+		err = json.Unmarshal(existingKeys, &unmarshalledKeys)
+		if err != nil {
+			return nil, err
+		}
+		for k := range unmarshalledKeys {
+			unmarshalledKeys[k] = false
+		}
+		unmarshalledKeys[accessKey] = true
+		marshalledKeys, err := json.Marshal(unmarshalledKeys)
+		if err != nil {
+			return nil, err
+		}
+		os.WriteFile("keys.json", marshalledKeys, 0644)
+		return []byte("OK"), nil
+
 	case "exit":
 		return nil, io.EOF
 	case "default":
