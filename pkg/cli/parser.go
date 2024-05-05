@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
+	"switchboard/pkg/cli/handlers"
 	"switchboard/pkg/types"
 )
 
@@ -42,36 +42,14 @@ func (c *Client) parser(input string) ([]byte, error) {
 		if len(args) != 2 {
 			return getUsageMessage(), nil
 		}
+
 		accessKey := args[1]
-		existingKeys, err := os.ReadFile("keys.json")
-
-		if err != nil {
-			keyStructure := map[string]bool{accessKey: true}
-			marshalledKey, err := json.Marshal(keyStructure)
-			if err != nil {
-				return nil, err
-			}
-			os.WriteFile("keys.json", marshalledKey, 0644)
-			c.accessKey = accessKey
-			return []byte("OK"), nil
-		}
-
-		var unmarshalledKeys map[string]bool
-		err = json.Unmarshal(existingKeys, &unmarshalledKeys)
+		response, err := handlers.HandleUse(accessKey)
 		if err != nil {
 			return nil, err
 		}
-		for k := range unmarshalledKeys {
-			unmarshalledKeys[k] = false
-		}
-		unmarshalledKeys[accessKey] = true
-		marshalledKeys, err := json.Marshal(unmarshalledKeys)
-		if err != nil {
-			return nil, err
-		}
-		os.WriteFile("keys.json", marshalledKeys, 0644)
 		c.accessKey = accessKey
-		return []byte("OK"), nil
+		return response, nil
 
 	case "exit":
 		return nil, io.EOF
@@ -82,10 +60,10 @@ func (c *Client) parser(input string) ([]byte, error) {
 
 	request := types.Request{Key: c.accessKey, Cmd: serializedCmd}
 	marshalledRequest, err := json.Marshal(request)
-	serializedRequest := string(marshalledRequest)
 	if err != nil {
 		return nil, err
 	}
+	serializedRequest := string(marshalledRequest)
 	response, err := c.sendCommand(serializedRequest)
 	if err != nil {
 		return nil, err

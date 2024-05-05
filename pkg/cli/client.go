@@ -32,10 +32,10 @@ func (c *Client) HandleConnection() {
 		response, err := c.parser(input)
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println("The connection has been closed. Thank you!")
+				displayWrapper("The connection has been closed. Thank you!\n")
 				return
 			}
-			fmt.Println(err)
+			displayWrapper(err.Error())
 			continue
 		}
 		wrappedResponse := string(append(response, []byte("\n")...))
