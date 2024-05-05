@@ -28,6 +28,9 @@ func (c *Client) parser(input string) ([]byte, error) {
 		if len(args) != 2 {
 			return getUsageMessage(), nil
 		}
+		if args[1] != "HashTable" && args[1] != "AVLTree" {
+			return getUsageMessage(), nil
+		}
 	case "exit":
 		return nil, io.EOF
 	case "default":

@@ -8,7 +8,8 @@ func WelcomePrompt() {
 	fmt.Println("1. set [key] [value]")
 	fmt.Println("2. get [key]")
 	fmt.Println("3. del [key]")
-	fmt.Println("4. exit")
+	fmt.Println("4. create-access-key {HashTable|AVLTree}")
+	fmt.Println("5. exit")
 	displayWrapper("")
 }
 
@@ -17,6 +18,6 @@ func displayWrapper(text string) {
 }
 
 func getUsageMessage() []byte {
-	msg := "Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit"
+	msg := "Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. create-access-key {HashTable|AVLTree}\n5. exit"
 	return []byte(msg)
 }
