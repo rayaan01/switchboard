@@ -14,7 +14,6 @@ func router(args []string) ([]byte, error) {
 		return errorMessage, nil
 	}
 	cmd := strings.ToLower(args[0])
-	fmt.Println("the cmd is", cmd)
 	switch cmd {
 	case "set":
 		// if len(args) != 3 {
@@ -28,6 +27,7 @@ func router(args []string) ([]byte, error) {
 		// }
 		// return response, nil
 		return []byte("OK"), nil
+
 	case "get":
 		// if len(args) != 2 {
 		// 	return errorMessage, nil
@@ -39,6 +39,7 @@ func router(args []string) ([]byte, error) {
 		// }
 		// return response, nil
 		return []byte("OK"), nil
+
 	case "del":
 		// if len(args) != 2 {
 		// 	return errorMessage, nil
@@ -50,6 +51,7 @@ func router(args []string) ([]byte, error) {
 		// }
 		// return response, nil
 		return []byte("OK"), nil
+
 	case "create-access-key":
 		if len(args) != 2 {
 			return errorMessage, nil
@@ -68,11 +70,12 @@ func router(args []string) ([]byte, error) {
 			StoreMapper[accessKey] = &AVLTree{}
 		}
 
-		response := fmt.Sprintf("Your access key is: %s. Please keep it safe as it's your gateway to the database", accessKey)
+		response := fmt.Sprintf("Your access key is: %s. Please keep it safe as it's your gateway to the database. Run the command `use %s` to set it as the default key for this session.", accessKey, accessKey)
 		return []byte(response), nil
 
 	case "exit":
 		return nil, io.EOF
+
 	default:
 		return errorMessage, nil
 	}
