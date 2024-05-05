@@ -6,12 +6,9 @@ import (
 	"io"
 	"net"
 	"strings"
-)
 
-type Request struct {
-	Key string
-	Cmd string
-}
+	"switchboard/pkg/types"
+)
 
 func Handler(conn net.Conn, s *Server) {
 	for {
@@ -28,7 +25,7 @@ func Handler(conn net.Conn, s *Server) {
 			conn.Write([]byte("Something went wrong!"))
 			continue
 		}
-		var request Request
+		var request types.Request
 		json.Unmarshal(buffer[:bytesRead], &request)
 		args := strings.Fields(request.Cmd)
 		response, err := router(request.Key, args)

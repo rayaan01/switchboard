@@ -7,12 +7,9 @@ import (
 	"io"
 	"os"
 	"strings"
-)
 
-type Request struct {
-	Key string
-	Cmd string
-}
+	"switchboard/pkg/types"
+)
 
 func (c *Client) parser(input string) ([]byte, error) {
 	args := strings.Fields(input)
@@ -83,10 +80,9 @@ func (c *Client) parser(input string) ([]byte, error) {
 		return getUsageMessage(), nil
 	}
 
-	request := Request{Key: c.accessKey, Cmd: serializedCmd}
+	request := types.Request{Key: c.accessKey, Cmd: serializedCmd}
 	marshalledRequest, err := json.Marshal(request)
 	serializedRequest := string(marshalledRequest)
-	fmt.Println("serialized request is", serializedRequest)
 	if err != nil {
 		return nil, err
 	}
