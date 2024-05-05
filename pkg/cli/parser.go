@@ -10,8 +10,8 @@ import (
 )
 
 type Request struct {
-	Key string `json:"key"`
-	Cmd string `json:"cmd"`
+	Key string
+	Cmd string
 }
 
 func (c *Client) parser(input string) ([]byte, error) {
@@ -27,10 +27,12 @@ func (c *Client) parser(input string) ([]byte, error) {
 		if len(args) != 3 {
 			return getUsageMessage(), nil
 		}
+
 	case "get", "del":
 		if len(args) != 2 {
 			return getUsageMessage(), nil
 		}
+
 	case "create-access-key":
 		if len(args) != 2 {
 			return getUsageMessage(), nil
@@ -38,6 +40,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 		if args[1] != "HashTable" && args[1] != "AVLTree" {
 			return getUsageMessage(), nil
 		}
+
 	case "use":
 		if len(args) != 2 {
 			return getUsageMessage(), nil
@@ -52,6 +55,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 				return nil, err
 			}
 			os.WriteFile("keys.json", marshalledKey, 0644)
+			c.accessKey = accessKey
 			return []byte("OK"), nil
 		}
 
@@ -69,15 +73,24 @@ func (c *Client) parser(input string) ([]byte, error) {
 			return nil, err
 		}
 		os.WriteFile("keys.json", marshalledKeys, 0644)
+		c.accessKey = accessKey
 		return []byte("OK"), nil
 
 	case "exit":
 		return nil, io.EOF
+
 	case "default":
 		return getUsageMessage(), nil
 	}
 
-	response, err := c.sendCommand(serializedCmd)
+	request := Request{Key: c.accessKey, Cmd: serializedCmd}
+	marshalledRequest, err := json.Marshal(request)
+	serializedRequest := string(marshalledRequest)
+	fmt.Println("serialized request is", serializedRequest)
+	if err != nil {
+		return nil, err
+	}
+	response, err := c.sendCommand(serializedRequest)
 	if err != nil {
 		return nil, err
 	}

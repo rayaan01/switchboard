@@ -1,11 +1,17 @@
 package db
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
 	"strings"
 )
+
+type Request struct {
+	Key string
+	Cmd string
+}
 
 func Handler(conn net.Conn, s *Server) {
 	for {
@@ -22,9 +28,10 @@ func Handler(conn net.Conn, s *Server) {
 			conn.Write([]byte("Something went wrong!"))
 			continue
 		}
-		input := string(buffer[:bytesRead])
-		args := strings.Fields(input)
-		response, err := router(args)
+		var request Request
+		json.Unmarshal(buffer[:bytesRead], &request)
+		args := strings.Fields(request.Cmd)
+		response, err := router(request.Key, args)
 		if err != nil {
 			if err == io.EOF {
 				conn.Close()

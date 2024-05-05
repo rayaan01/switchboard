@@ -8,49 +8,47 @@ import (
 	"github.com/google/uuid"
 )
 
-func router(args []string) ([]byte, error) {
+func router(accessKey string, args []string) ([]byte, error) {
 	errorMessage := []byte("Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit")
 	if len(args) == 0 {
 		return errorMessage, nil
 	}
+
 	cmd := strings.ToLower(args[0])
 	switch cmd {
 	case "set":
-		// if len(args) != 3 {
-		// 	return errorMessage, nil
-		// }
-		// key := args[1]
-		// val := args[2]
-		// response, err := handleSet(key, val)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		// return response, nil
-		return []byte("OK"), nil
+		if len(args) != 3 {
+			return errorMessage, nil
+		}
+		key := args[1]
+		val := args[2]
+		response, err := StoreMapper[accessKey].set(key, val)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
 
 	case "get":
-		// if len(args) != 2 {
-		// 	return errorMessage, nil
-		// }
-		// key := args[1]
-		// response, err := handleGet(key)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		// return response, nil
-		return []byte("OK"), nil
+		if len(args) != 2 {
+			return errorMessage, nil
+		}
+		key := args[1]
+		response, err := StoreMapper[accessKey].get(key)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
 
 	case "del":
-		// if len(args) != 2 {
-		// 	return errorMessage, nil
-		// }
-		// key := args[1]
-		// response, err := handleDel(key)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		// return response, nil
-		return []byte("OK"), nil
+		if len(args) != 2 {
+			return errorMessage, nil
+		}
+		key := args[1]
+		response, err := StoreMapper[accessKey].del(key)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
 
 	case "create-access-key":
 		if len(args) != 2 {
@@ -58,14 +56,13 @@ func router(args []string) ([]byte, error) {
 		}
 		engineType := args[1]
 		if engineType != "HashTable" && engineType != "AVLTree" {
-			fmt.Println("len of response", len(errorMessage))
 			return errorMessage, nil
 		}
 
 		accessKey := uuid.NewString()
 
 		if engineType == "HashTable" {
-			StoreMapper[accessKey] = &HashTable{}
+			StoreMapper[accessKey] = &HashTable{store: map[string]string{}}
 		} else {
 			StoreMapper[accessKey] = &AVLTree{}
 		}

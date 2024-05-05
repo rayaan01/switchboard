@@ -9,17 +9,19 @@ import (
 )
 
 type Client struct {
-	address string
-	conn    net.Conn
+	address   string
+	conn      net.Conn
+	accessKey string
 }
 
 func CreateClient(host *string, port *string) (*Client, error) {
 	address := fmt.Sprintf("%s:%s", *host, *port)
 	conn, err := net.Dial("tcp", address)
+	accessKey := "EMPTY"
 	if err != nil {
 		return nil, err
 	}
-	clientInstance := Client{address, conn}
+	clientInstance := Client{address, conn, accessKey}
 	return &clientInstance, nil
 }
 
