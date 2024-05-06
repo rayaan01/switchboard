@@ -14,9 +14,6 @@ import (
 func (c *Client) parser(input string) ([]byte, error) {
 	args := strings.Fields(input)
 	serializedCmd := strings.Join(args, " ")
-	if len(args) == 0 {
-		return getUsageMessage(), nil
-	}
 
 	cmd := args[0]
 	switch cmd {
@@ -54,7 +51,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 	case "exit":
 		return nil, io.EOF
 
-	case "default":
+	default:
 		return getUsageMessage(), nil
 	}
 
@@ -77,26 +74,10 @@ func (c *Client) sendRequest(request []byte) ([]byte, error) {
 		msg := fmt.Sprintf("%s %s", "Could not write to connection", err)
 		return nil, errors.New(msg)
 	}
-	response := make([]byte, 0, 1024)
-	bytesRead := 0
-	err = c.readResponse(&response, &bytesRead)
+	response := make([]byte, 1024)
+	bytesRead, err := c.conn.Read(response)
 	if err != nil {
 		return nil, err
 	}
 	return response[:bytesRead], nil
-}
-
-func (c *Client) readResponse(responseBuffer *[]byte, bytesRead *int) error {
-	for {
-		chunk := make([]byte, 128)
-		n, err := c.conn.Read(chunk)
-		if err != nil {
-			return err
-		}
-		*responseBuffer = append(*responseBuffer, chunk[:n]...)
-		*bytesRead += n
-		if n < cap(chunk) {
-			return nil
-		}
-	}
 }

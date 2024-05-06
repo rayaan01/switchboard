@@ -29,6 +29,10 @@ func (c *Client) HandleConnection() {
 	reader := bufio.NewScanner(os.Stdin)
 	for reader.Scan() {
 		input := reader.Text()
+		if len(input) == 0 {
+			displayWrapper("")
+			continue
+		}
 		response, err := c.parser(input)
 		if err != nil {
 			if err == io.EOF {
