@@ -1,11 +1,11 @@
-package handlers
+package utils
 
 import (
 	"encoding/json"
 	"os"
 )
 
-func HandleUse(accessKey string) ([]byte, error) {
+func UpdateKeys(accessKey string) ([]byte, error) {
 	fileName := "keys.json"
 	existingKeys, err := os.ReadFile(fileName)
 
@@ -34,4 +34,25 @@ func HandleUse(accessKey string) ([]byte, error) {
 	}
 	os.WriteFile(fileName, marshalledKeys, 0644)
 	return []byte("OK"), nil
+}
+
+func GetAccessKey() (string, error) {
+	fileName := "keys.json"
+	existingKeys, err := os.ReadFile(fileName)
+	if err != nil {
+		return "", nil
+	}
+
+	var unmarshalledKeys map[string]bool
+	err = json.Unmarshal(existingKeys, &unmarshalledKeys)
+	if err != nil {
+		return "", err
+	}
+	for k, v := range unmarshalledKeys {
+		if v {
+			return k, err
+		}
+	}
+
+	return "", err
 }

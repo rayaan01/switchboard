@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"switchboard/pkg/cli/handlers"
+	"switchboard/pkg/cli/utils"
 	"switchboard/pkg/common"
 	"switchboard/pkg/types"
 )
@@ -43,7 +43,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 		}
 
 		accessKey := args[1]
-		response, err := handlers.HandleUse(accessKey)
+		response, err := utils.UpdateKeys(accessKey)
 		if err != nil {
 			return nil, err
 		}
@@ -55,6 +55,14 @@ func (c *Client) parser(input string) ([]byte, error) {
 
 	default:
 		return usageMessage, nil
+	}
+
+	if c.accessKey == "EMPTY" {
+		accessKey, err := utils.GetAccessKey()
+		if err != nil {
+			return nil, err
+		}
+		c.accessKey = accessKey
 	}
 
 	request := types.Request{Key: c.accessKey, Cmd: serializedCmd}
