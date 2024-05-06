@@ -22,7 +22,11 @@ func router(accessKey string, args []string) ([]byte, error) {
 		}
 		key := args[1]
 		val := args[2]
-		response, err := StoreMapper[accessKey].set(key, val)
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+		response, err := engine.set(key, val)
 		if err != nil {
 			return nil, err
 		}
@@ -33,7 +37,11 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return errorMessage, nil
 		}
 		key := args[1]
-		response, err := StoreMapper[accessKey].get(key)
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+		response, err := engine.get(key)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +52,11 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return errorMessage, nil
 		}
 		key := args[1]
-		response, err := StoreMapper[accessKey].del(key)
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+		response, err := engine.del(key)
 		if err != nil {
 			return nil, err
 		}
