@@ -4,21 +4,19 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"switchboard/pkg/common"
 
 	"github.com/google/uuid"
 )
 
 func router(accessKey string, args []string) ([]byte, error) {
-	errorMessage := []byte("Available commands:\n1. set [key] [value]\n2. get [key]\n3. del [key]\n4. exit")
-	if len(args) == 0 {
-		return errorMessage, nil
-	}
+	usageMessage := common.GetUsageMessage()
+	cmdType := strings.ToLower(args[0])
 
-	cmd := strings.ToLower(args[0])
-	switch cmd {
+	switch cmdType {
 	case "set":
 		if len(args) != 3 {
-			return errorMessage, nil
+			return usageMessage, nil
 		}
 		key := args[1]
 		val := args[2]
@@ -34,7 +32,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 
 	case "get":
 		if len(args) != 2 {
-			return errorMessage, nil
+			return usageMessage, nil
 		}
 		key := args[1]
 		engine, ok := StoreMapper[accessKey]
@@ -49,7 +47,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 
 	case "del":
 		if len(args) != 2 {
-			return errorMessage, nil
+			return usageMessage, nil
 		}
 		key := args[1]
 		engine, ok := StoreMapper[accessKey]
@@ -64,11 +62,11 @@ func router(accessKey string, args []string) ([]byte, error) {
 
 	case "create-access-key":
 		if len(args) != 2 {
-			return errorMessage, nil
+			return usageMessage, nil
 		}
 		engineType := args[1]
 		if engineType != "HashTable" && engineType != "AVLTree" {
-			return errorMessage, nil
+			return usageMessage, nil
 		}
 
 		accessKey := uuid.NewString()
@@ -86,6 +84,6 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return nil, io.EOF
 
 	default:
-		return errorMessage, nil
+		return usageMessage, nil
 	}
 }

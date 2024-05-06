@@ -8,36 +8,38 @@ import (
 	"strings"
 
 	"switchboard/pkg/cli/handlers"
+	"switchboard/pkg/common"
 	"switchboard/pkg/types"
 )
 
 func (c *Client) parser(input string) ([]byte, error) {
+	usageMessage := common.GetUsageMessage()
 	args := strings.Fields(input)
 	serializedCmd := strings.Join(args, " ")
+	cmdType := args[0]
 
-	cmd := args[0]
-	switch cmd {
+	switch cmdType {
 	case "set":
 		if len(args) != 3 {
-			return getUsageMessage(), nil
+			return usageMessage, nil
 		}
 
 	case "get", "del":
 		if len(args) != 2 {
-			return getUsageMessage(), nil
+			return usageMessage, nil
 		}
 
 	case "create-access-key":
 		if len(args) != 2 {
-			return getUsageMessage(), nil
+			return usageMessage, nil
 		}
 		if args[1] != "HashTable" && args[1] != "AVLTree" {
-			return getUsageMessage(), nil
+			return usageMessage, nil
 		}
 
 	case "use":
 		if len(args) != 2 {
-			return getUsageMessage(), nil
+			return usageMessage, nil
 		}
 
 		accessKey := args[1]
@@ -52,7 +54,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 		return nil, io.EOF
 
 	default:
-		return getUsageMessage(), nil
+		return usageMessage, nil
 	}
 
 	request := types.Request{Key: c.accessKey, Cmd: serializedCmd}
