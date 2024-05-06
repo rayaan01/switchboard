@@ -6,5 +6,4 @@ type StorageEngine interface {
 	del(key string) ([]byte, error)
 }
 
-// Map access keys to store instances
 var StoreMapper = map[string]StorageEngine{}
