@@ -63,8 +63,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	serializedRequest := string(marshalledRequest)
-	response, err := c.sendCommand(serializedRequest)
+	response, err := c.sendRequest(marshalledRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -72,13 +71,12 @@ func (c *Client) parser(input string) ([]byte, error) {
 	return response, nil
 }
 
-func (c *Client) sendCommand(cmd string) ([]byte, error) {
-	_, err := fmt.Fprint(c.conn, cmd)
+func (c *Client) sendRequest(request []byte) ([]byte, error) {
+	_, err := c.conn.Write(request)
 	if err != nil {
 		msg := fmt.Sprintf("%s %s", "Could not write to connection", err)
 		return nil, errors.New(msg)
 	}
-
 	response := make([]byte, 0, 1024)
 	bytesRead := 0
 	err = c.readResponse(&response, &bytesRead)
