@@ -76,7 +76,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		if engineType == "HashTable" {
 			StoreMapper[accessKey] = &HashTable{store: map[string]string{}}
 		} else {
-			StoreMapper[accessKey] = &AVLTree{}
+			StoreMapper[accessKey] = &AVLTree{store: nil}
 		}
 
 		response := fmt.Sprintf("Your access key is: %s. Please keep it safe as it's your gateway to the database. Run the command `use %s` to set it as the default key for this session.", accessKey, accessKey)
