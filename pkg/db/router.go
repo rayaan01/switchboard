@@ -83,6 +83,15 @@ func router(accessKey string, args []string) ([]byte, error) {
 	case "exit":
 		return nil, io.EOF
 
+	case "visualize":
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+		store := engine.getStore()
+		engine.visualize(store)
+		return []byte("OK"), nil
+
 	default:
 		return usageMessage, nil
 	}

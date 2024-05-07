@@ -1,5 +1,7 @@
 package db
 
+import "fmt"
+
 type AVLTreeNode struct {
 	key    string
 	value  string
@@ -24,6 +26,21 @@ func (at *AVLTree) set(key string, value string) ([]byte, error) {
 
 func (at *AVLTree) del(key string) ([]byte, error) {
 	return []byte("OK"), nil
+}
+
+func (at *AVLTree) getStore() *AVLTreeNode {
+	return at.store
+}
+
+func (at *AVLTree) visualize(node *AVLTreeNode) {
+	if node == nil {
+		return
+	}
+	at.visualize(node.left)
+	fmt.Println("Node", node)
+	fmt.Println("Left", node.left)
+	fmt.Println("Right", node.right)
+	at.visualize(node.right)
 }
 
 func insert(node *AVLTreeNode, key string, value string) *AVLTreeNode {
@@ -139,14 +156,3 @@ func rotateRight(node *AVLTreeNode) *AVLTreeNode {
 
 	return root
 }
-
-// func visualize(node *AVLTreeNode) {
-// 	if node == nil {
-// 		return
-// 	}
-// 	visualize(node.left)
-// 	fmt.Println("Node", node)
-// 	fmt.Println("Left", node.left)
-// 	fmt.Println("Right", node.right)
-// 	visualize(node.right)
-// }
