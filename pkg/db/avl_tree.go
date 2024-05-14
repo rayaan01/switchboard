@@ -25,6 +25,7 @@ func (at *AVLTree) set(key string, value string) ([]byte, error) {
 }
 
 func (at *AVLTree) del(key string) ([]byte, error) {
+	at.store = remove(at.store, key)
 	return []byte("OK"), nil
 }
 
@@ -55,7 +56,7 @@ func insert(node *AVLTreeNode, key string, value string) *AVLTreeNode {
 	}
 
 	node.height = updateHeight(node)
-	bf := getHeight(node.left) - getHeight(node.right)
+	bf := getBalanceFactor(node)
 
 	if bf < -1 && key > node.right.key {
 		return rotateLeft(node)
@@ -76,6 +77,62 @@ func insert(node *AVLTreeNode, key string, value string) *AVLTreeNode {
 	}
 
 	return node
+}
+
+func remove(node *AVLTreeNode, key string) *AVLTreeNode {
+	if node == nil {
+		return node
+	}
+
+	if key < node.key {
+		node.left = remove(node.left, key)
+	} else if key > node.key {
+		node.right = remove(node.right, key)
+	} else {
+		if node.left == nil {
+			temp := node.right
+			node = nil
+			return temp
+		} else if node.right == nil {
+			temp := node.left
+			node = nil
+			return temp
+		}
+
+		temp := getMinValueNode(node.right)
+		node.value = temp.value
+		node.right = remove(node.right, temp.value)
+	}
+
+	node.height = updateHeight(node)
+	bf := getBalanceFactor(node)
+
+	if bf < -1 && getBalanceFactor(node.right) <= 0 {
+		return rotateLeft(node)
+	}
+
+	if bf > 1 && getBalanceFactor(node.left) >= 0 {
+		return rotateRight(node)
+	}
+
+	if bf < -1 && getBalanceFactor(node.right) > 0 {
+		node.right = rotateRight(node.right)
+		return rotateLeft(node)
+	}
+
+	if bf > 1 && getBalanceFactor(node.left) < 0 {
+		node.left = rotateLeft(node.left)
+		return rotateRight(node)
+	}
+
+	return node
+}
+
+func getBalanceFactor(node *AVLTreeNode) int16 {
+	if node == nil {
+		return 0
+	}
+	return getHeight(node.left) - getHeight(node.right)
 }
 
 func retrieve(node *AVLTreeNode, key string) string {
@@ -131,6 +188,13 @@ func updateHeight(node *AVLTreeNode) int16 {
 	}
 
 	return 1 + max(heightLeftSubtree, heightRightSubtree)
+}
+
+func getMinValueNode(node *AVLTreeNode) *AVLTreeNode {
+	if node == nil || node.left == nil {
+		return node
+	}
+	return getMinValueNode(node.left)
 }
 
 func rotateLeft(node *AVLTreeNode) *AVLTreeNode {
