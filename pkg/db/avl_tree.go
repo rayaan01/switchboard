@@ -72,7 +72,7 @@ func insert(node *AVLTreeNode, key string, value string) *AVLTreeNode {
 	}
 
 	if bf > 1 && key > node.left.key {
-		node.left = rotateLeft(node.right)
+		node.left = rotateLeft(node.left)
 		return rotateRight(node)
 	}
 
