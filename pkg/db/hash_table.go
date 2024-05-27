@@ -28,6 +28,12 @@ func (ht *HashTable) getStore() *AVLTreeNode {
 	return nil
 }
 
-func (ht *HashTable) visualize(node *AVLTreeNode) {
-	fmt.Println("HASH TABLE")
+func (ht *HashTable) visualizeAVLTree(node *AVLTreeNode) {
+	fmt.Println("Could not visualize AVL Tree")
+}
+
+func (ht *HashTable) visualizeHashTable() {
+	for key, value := range ht.store {
+		fmt.Printf("%s:%s\n", key, value)
+	}
 }

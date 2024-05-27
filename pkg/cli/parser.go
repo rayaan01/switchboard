@@ -50,7 +50,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 		c.accessKey = accessKey
 		return response, nil
 
-	case "visualize":
+	case "visualize-avl-tree", "visualize-hash-table":
 		if len(args) != 1 {
 			return usageMessage, nil
 		}

@@ -33,15 +33,19 @@ func (at *AVLTree) getStore() *AVLTreeNode {
 	return at.store
 }
 
-func (at *AVLTree) visualize(node *AVLTreeNode) {
+func (at *AVLTree) visualizeAVLTree(node *AVLTreeNode) {
 	if node == nil {
 		return
 	}
-	at.visualize(node.left)
+	at.visualizeAVLTree(node.left)
 	fmt.Println("Node", node)
 	fmt.Println("Left", node.left)
 	fmt.Println("Right", node.right)
-	at.visualize(node.right)
+	at.visualizeAVLTree(node.right)
+}
+
+func (at *AVLTree) visualizeHashTable() {
+	fmt.Println("Could not visualize Hash Table")
 }
 
 func insert(node *AVLTreeNode, key string, value string) *AVLTreeNode {
