@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"time"
 )
 
 type Client struct {
@@ -33,7 +34,9 @@ func (c *Client) HandleConnection() {
 			displayWrapper("")
 			continue
 		}
+		start := time.Now()
 		response, err := c.parser(input)
+		duration := time.Since(start)
 		if err != nil {
 			if err == io.EOF {
 				displayWrapper("The connection has been closed. Thank you!\n")
@@ -42,7 +45,8 @@ func (c *Client) HandleConnection() {
 			displayWrapper(err.Error())
 			continue
 		}
-		wrappedResponse := string(append(response, []byte("\n")...))
+		formattedResponse := []byte(fmt.Sprintf(" (%s)\n", duration))
+		wrappedResponse := string(append(response, formattedResponse...))
 		displayWrapper(wrappedResponse)
 		displayWrapper("")
 	}
