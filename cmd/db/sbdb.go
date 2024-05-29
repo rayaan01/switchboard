@@ -9,10 +9,9 @@ import (
 )
 
 func main() {
-	host := flag.String("h", "localhost", "Host to serve on")
 	port := flag.String("p", "8080", "Port to serve on")
 	flag.Parse()
-	server, err := db.CreateServer(*host, *port)
+	server, err := db.CreateServer(*port)
 	if err != nil {
 		fmt.Printf("%s %s \n", "Could not start server", err)
 		os.Exit(-1)

@@ -12,8 +12,8 @@ type Server struct {
 
 type ServerHandler func(conn net.Conn, server *Server)
 
-func CreateServer(host string, port string) (*Server, error) {
-	address := fmt.Sprintf("%s:%s", host, port)
+func CreateServer(port string) (*Server, error) {
+	address := fmt.Sprintf(":%s", port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		return nil, err
