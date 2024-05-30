@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 	"switchboard/pkg/common"
+	"switchboard/pkg/prometheus"
 
 	"github.com/google/uuid"
 )
@@ -15,6 +16,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 
 	switch cmdType {
 	case "set":
+		prometheus.SetCounter.Inc()
 		if len(args) != 3 {
 			return usageMessage, nil
 		}
@@ -31,6 +33,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return response, nil
 
 	case "get":
+		prometheus.GetCounter.Inc()
 		if len(args) != 2 {
 			return usageMessage, nil
 		}
@@ -46,6 +49,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return response, nil
 
 	case "del":
+		prometheus.DelCounter.Inc()
 		if len(args) != 2 {
 			return usageMessage, nil
 		}
