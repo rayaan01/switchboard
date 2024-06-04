@@ -12,10 +12,11 @@ func MetricsListener() {
 	prometheus.MustRegister(SetCounter)
 	prometheus.MustRegister(GetCounter)
 	prometheus.MustRegister(DelCounter)
+	prometheus.MustRegister(SetHistogram)
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		fmt.Println("Metrics listening on :8090")
+		fmt.Println("metrics listening on :8090")
 		http.ListenAndServe(":8090", nil)
 	}()
 }

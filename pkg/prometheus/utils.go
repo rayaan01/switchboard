@@ -22,3 +22,10 @@ var DelCounter = prometheus.NewCounter(
 		Help: "Number of del requests handled",
 	},
 )
+
+var SetHistogram = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+	Namespace: "set_time",
+	Name:      "set_time",
+	Help:      "Time taken to execute set query on the key value store",
+	Buckets:   []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
+}, []string{"key"})

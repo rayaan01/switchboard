@@ -6,6 +6,7 @@ import (
 	"strings"
 	"switchboard/pkg/common"
 	"switchboard/pkg/prometheus"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -26,10 +27,14 @@ func router(accessKey string, args []string) ([]byte, error) {
 		if !ok {
 			return []byte("(invalid access key)"), nil
 		}
+		start := time.Now()
 		response, err := engine.set(key, val)
 		if err != nil {
 			return nil, err
 		}
+		duration := time.Since(start)
+		prometheus.SetHistogram.WithLabelValues(key).Observe(duration.Seconds())
+		fmt.Println("Time taken: ", duration.Seconds())
 		return response, nil
 
 	case "get":
