@@ -6,11 +6,9 @@ import (
 	"os"
 
 	"switchboard/pkg/db"
-	"switchboard/pkg/prometheus"
 )
 
 func main() {
-	prometheus.MetricsListener()
 	port := flag.String("p", "8080", "Port to serve on")
 	flag.Parse()
 	server, err := db.CreateServer(*port)

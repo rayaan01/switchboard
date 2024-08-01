@@ -1,23 +1,25 @@
 package db
 
 import (
+	"encoding/csv"
 	"fmt"
 	"io"
 	"strings"
 	"switchboard/pkg/common"
-	"switchboard/pkg/prometheus"
+	"switchboard/pkg/db/utils"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-func router(accessKey string, args []string) ([]byte, error) {
+func router(accessKey string, args []string, metricsWriter *csv.Writer) ([]byte, error) {
 	usageMessage := common.GetUsageMessage()
 	cmdType := strings.ToLower(args[0])
 
+	defer metricsWriter.Flush()
+
 	switch cmdType {
 	case "set":
-		prometheus.SetCounter.Inc()
 		if len(args) != 3 {
 			return usageMessage, nil
 		}
@@ -32,13 +34,12 @@ func router(accessKey string, args []string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		duration := time.Since(start)
-		prometheus.SetHistogram.WithLabelValues(key).Observe(duration.Seconds())
-		fmt.Println("Time taken: ", duration.Seconds())
+		duration := time.Since(start).Seconds() * 1e6
+		utils.Logger(duration, metricsWriter)
+
 		return response, nil
 
 	case "get":
-		prometheus.GetCounter.Inc()
 		if len(args) != 2 {
 			return usageMessage, nil
 		}
@@ -54,7 +55,6 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return response, nil
 
 	case "del":
-		prometheus.DelCounter.Inc()
 		if len(args) != 2 {
 			return usageMessage, nil
 		}
