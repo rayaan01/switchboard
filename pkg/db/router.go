@@ -6,7 +6,6 @@ import (
 	"io"
 	"strings"
 	"switchboard/pkg/common"
-	"switchboard/pkg/db/utils"
 	"time"
 
 	"github.com/google/uuid"
@@ -35,7 +34,7 @@ func router(accessKey string, args []string, metricsWriter *csv.Writer) ([]byte,
 			return nil, err
 		}
 		duration := time.Since(start).Seconds() * 1e6
-		utils.Logger(duration, metricsWriter)
+		logger(duration, metricsWriter)
 
 		return response, nil
 
