@@ -34,7 +34,7 @@ func router(accessKey string, args []string, metricsWriter *csv.Writer) ([]byte,
 			return nil, err
 		}
 		duration := time.Since(start).Seconds() * 1e6
-		logger(duration, metricsWriter)
+		logger(1, duration, metricsWriter)
 
 		return response, nil
 
@@ -107,6 +107,24 @@ func router(accessKey string, args []string, metricsWriter *csv.Writer) ([]byte,
 		store := engine.getStore()
 		engine.visualizeAVLTree(store)
 		return []byte("OK"), nil
+
+	case "benchmark_set":
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+		for i := 0; i < 10000; i++ {
+			key := uuid.NewString()
+			value := uuid.NewString()
+			start := time.Now()
+			_, err := engine.set(key, value)
+			if err != nil {
+				return nil, err
+			}
+			duration := time.Since(start).Seconds() * 1e9
+			logger(i+1, duration, metricsWriter)
+		}
+		return []byte("Done"), nil
 
 	default:
 		return usageMessage, nil
