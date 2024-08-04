@@ -28,14 +28,10 @@ func router(accessKey string, args []string, metricsWriter *csv.Writer) ([]byte,
 		if !ok {
 			return []byte("(invalid access key)"), nil
 		}
-		start := time.Now()
 		response, err := engine.set(key, val)
 		if err != nil {
 			return nil, err
 		}
-		duration := time.Since(start).Seconds() * 1e6
-		logger(1, duration, metricsWriter)
-
 		return response, nil
 
 	case "get":
@@ -113,7 +109,7 @@ func router(accessKey string, args []string, metricsWriter *csv.Writer) ([]byte,
 		if !ok {
 			return []byte("(invalid access key)"), nil
 		}
-		for i := 0; i < 10000; i++ {
+		for i := 0; i < 1000; i++ {
 			key := uuid.NewString()
 			value := uuid.NewString()
 			start := time.Now()
@@ -122,7 +118,7 @@ func router(accessKey string, args []string, metricsWriter *csv.Writer) ([]byte,
 				return nil, err
 			}
 			duration := time.Since(start).Seconds() * 1e9
-			logger(i+1, duration, metricsWriter)
+			logger(i+1, key, value, duration, metricsWriter)
 		}
 		return []byte("Done"), nil
 
