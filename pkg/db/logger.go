@@ -7,11 +7,17 @@ import (
 	"time"
 )
 
-func logger(index int, key string, value string, duration float64, writer *csv.Writer) {
+func logger(index int, duration float64, key string, writer *csv.Writer) {
 	timestamp := time.Now().UTC().Format(time.RFC3339)
 	formattedIndex := fmt.Sprintf("%d", index)
 	executionTime := fmt.Sprintf("%.6f", duration)
-	writer.Write([]string{formattedIndex, timestamp, key, value, executionTime})
+	var csvData []string
+	if key == "" {
+		csvData = []string{formattedIndex, timestamp, executionTime}
+	} else {
+		csvData = []string{formattedIndex, timestamp, key, executionTime}
+	}
+	writer.Write(csvData)
 }
 
 func generateRandomString(n int) string {

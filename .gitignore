@@ -4,3 +4,4 @@ todos.txt
 *.csv
 *.png
 .ipynb_checkpoints
+.DS_STORE

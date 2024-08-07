@@ -1,12 +1,10 @@
 package db
 
 import (
-	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net"
-	"os"
 	"strings"
 
 	"switchboard/pkg/types"
@@ -14,13 +12,6 @@ import (
 
 func Handler(conn net.Conn, s *Server) {
 	defer conn.Close()
-	filePath := "metrics.csv"
-	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		fmt.Printf("Error opening %s file: %s", filePath, err)
-	}
-	metricsWriter := csv.NewWriter(file)
-	defer file.Close()
 
 	for {
 		buffer := make([]byte, 0, 1024)
@@ -38,7 +29,7 @@ func Handler(conn net.Conn, s *Server) {
 		var request types.Request
 		json.Unmarshal(buffer[:bytesRead], &request)
 		args := strings.Fields(request.Cmd)
-		response, err := router(request.Key, args, metricsWriter)
+		response, err := router(request.Key, args)
 		if err != nil {
 			if err == io.EOF {
 				return
