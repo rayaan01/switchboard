@@ -20,6 +20,11 @@ func logger(index int, duration float64, key string, writer *csv.Writer) {
 	writer.Write(csvData)
 }
 
+func logger_tps(tps int, writer *csv.Writer) {
+	formattedTps := fmt.Sprintf("%d", tps)
+	writer.Write([]string{formattedTps})
+}
+
 func generateRandomString(n int) string {
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	b := make([]rune, n)

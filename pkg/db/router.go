@@ -12,6 +12,8 @@ import (
 	"github.com/google/uuid"
 )
 
+var keys = []string{}
+
 func router(accessKey string, args []string) ([]byte, error) {
 	usageMessage := common.GetUsageMessage()
 	cmdType := strings.ToLower(args[0])
@@ -116,16 +118,18 @@ func router(accessKey string, args []string) ([]byte, error) {
 		if !ok {
 			return []byte("(invalid access key)"), nil
 		}
-		for i := 0; i < 1000; i++ {
+		for i := 0; i < 5000000; i++ {
+			// key := generateRandomString(1000000)
 			key := uuid.NewString()
+			keys = append(keys, key)
 			value := uuid.NewString()
-			start := time.Now()
+			// start := time.Now()
 			_, err := engine.set(key, value)
 			if err != nil {
 				return nil, err
 			}
-			duration := time.Since(start).Seconds() * 1e9
-			logger(i+1, duration, key, metricsWriter)
+			// duration := time.Since(start).Seconds() * 1e9
+			// logger(i+1, duration, key, metricsWriter)
 		}
 		return []byte("Done"), nil
 
@@ -186,9 +190,9 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return nil, err
 		}
 
-		file_get, err := os.OpenFile("metrics_get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		file_get, err := os.OpenFile("metrics_del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
-			fmt.Printf("Error opening %s file: %s", "metrics_get.csv", err)
+			fmt.Printf("Error opening %s file: %s", "metrics_del.csv", err)
 		}
 		defer file_get.Close()
 		metricsWriter := csv.NewWriter(file_get)
@@ -204,6 +208,74 @@ func router(accessKey string, args []string) ([]byte, error) {
 			duration := time.Since(start).Seconds() * 1e9
 			logger(i+1, duration, "", metricsWriter)
 		}
+
+		return []byte("Done"), nil
+
+	case "benchmark_tps_set":
+		file_get, err := os.OpenFile("metrics_tps_set.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", "metrics_tps_set.csv", err)
+		}
+		defer file_get.Close()
+		metricsWriter := csv.NewWriter(file_get)
+		defer metricsWriter.Flush()
+
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+
+		operations, err := measure_tps_set(engine)
+		if err != nil {
+			fmt.Printf("Error measuring throughput: %s", err)
+		}
+		logger_tps(operations, metricsWriter)
+
+		return []byte("Done"), nil
+
+	case "benchmark_tps_get":
+		file_get, err := os.OpenFile("metrics_tps_get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", "metrics_tps_get.csv", err)
+		}
+		defer file_get.Close()
+		metricsWriter := csv.NewWriter(file_get)
+		defer metricsWriter.Flush()
+
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+
+		operations, err := measure_tps_get(engine, keys)
+		if err != nil {
+			fmt.Printf("Error measuring throughput: %s", err)
+		}
+
+		logger_tps(operations, metricsWriter)
+
+		return []byte("Done"), nil
+
+	case "benchmark_tps_del":
+		file_get, err := os.OpenFile("metrics_tps_del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", "metrics_tps_del.csv", err)
+		}
+		defer file_get.Close()
+		metricsWriter := csv.NewWriter(file_get)
+		defer metricsWriter.Flush()
+
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+
+		operations, err := measure_tps_del(engine, keys)
+		if err != nil {
+			fmt.Printf("Error measuring throughput: %s", err)
+		}
+
+		logger_tps(operations, metricsWriter)
 
 		return []byte("Done"), nil
 
