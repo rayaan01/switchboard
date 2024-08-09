@@ -118,7 +118,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		if !ok {
 			return []byte("(invalid access key)"), nil
 		}
-		for i := 0; i < 5000000; i++ {
+		for i := 0; i < 3000000; i++ {
 			// key := generateRandomString(1000000)
 			key := uuid.NewString()
 			keys = append(keys, key)
