@@ -88,23 +88,6 @@ func router(accessKey string, args []string) ([]byte, error) {
 	case "exit":
 		return nil, io.EOF
 
-	case "visualize-hash-table":
-		engine, ok := StoreMapper[accessKey]
-		if !ok {
-			return []byte("(invalid access key)"), nil
-		}
-		engine.visualizeHashTable()
-		return []byte("OK"), nil
-
-	case "visualize-avl-tree":
-		engine, ok := StoreMapper[accessKey]
-		if !ok {
-			return []byte("(invalid access key)"), nil
-		}
-		store := engine.getStore()
-		engine.visualizeAVLTree(store)
-		return []byte("OK"), nil
-
 	case "benchmark_set":
 		filePath := "metrics.csv"
 		file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
