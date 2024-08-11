@@ -5,7 +5,7 @@ type AVLTreeNode struct {
 	value  string
 	left   *AVLTreeNode
 	right  *AVLTreeNode
-	height int16
+	height int8
 }
 
 type AVLTree struct {
@@ -111,7 +111,7 @@ func remove(node *AVLTreeNode, key string) *AVLTreeNode {
 	return node
 }
 
-func getBalanceFactor(node *AVLTreeNode) int16 {
+func getBalanceFactor(node *AVLTreeNode) int8 {
 	if node == nil {
 		return 0
 	}
@@ -144,7 +144,7 @@ func createNode(key string, value string) *AVLTreeNode {
 	}
 }
 
-func getHeight(node *AVLTreeNode) int16 {
+func getHeight(node *AVLTreeNode) int8 {
 	if node == nil {
 		return 0
 	} else {
@@ -152,10 +152,10 @@ func getHeight(node *AVLTreeNode) int16 {
 	}
 }
 
-func updateHeight(node *AVLTreeNode) int16 {
+func updateHeight(node *AVLTreeNode) int8 {
 	var (
-		heightLeftSubtree  int16
-		heightRightSubtree int16
+		heightLeftSubtree  int8
+		heightRightSubtree int8
 	)
 
 	if node.left == nil {
