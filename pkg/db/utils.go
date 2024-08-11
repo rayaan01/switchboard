@@ -9,7 +9,6 @@ import (
 func measure_tps_set(engine StorageEngine) (int, error) {
 	var count int
 	duration := time.Second
-	ticker := time.NewTicker(duration)
 	done := make(chan bool)
 
 	go func() {
@@ -19,8 +18,6 @@ func measure_tps_set(engine StorageEngine) (int, error) {
 
 	for {
 		select {
-		case <-ticker.C:
-			return count, nil
 		case <-done:
 			return count, nil
 		default:
@@ -38,7 +35,6 @@ func measure_tps_set(engine StorageEngine) (int, error) {
 func measure_tps_get(engine StorageEngine, keys []string) (int, error) {
 	var count int
 	duration := time.Second
-	ticker := time.NewTicker(duration)
 	done := make(chan bool)
 
 	go func() {
@@ -48,8 +44,6 @@ func measure_tps_get(engine StorageEngine, keys []string) (int, error) {
 
 	for _, key := range keys {
 		select {
-		case <-ticker.C:
-			return count, nil
 		case <-done:
 			return count, nil
 		default:
@@ -67,7 +61,6 @@ func measure_tps_get(engine StorageEngine, keys []string) (int, error) {
 func measure_tps_del(engine StorageEngine, keys []string) (int, error) {
 	var count int
 	duration := time.Second
-	ticker := time.NewTicker(duration)
 	done := make(chan bool)
 
 	go func() {
@@ -77,8 +70,6 @@ func measure_tps_del(engine StorageEngine, keys []string) (int, error) {
 
 	for _, key := range keys {
 		select {
-		case <-ticker.C:
-			return count, nil
 		case <-done:
 			return count, nil
 		default:
