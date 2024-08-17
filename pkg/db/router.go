@@ -119,12 +119,11 @@ func router(accessKey string, args []string) ([]byte, error) {
 		}
 		for i := 0; i < 1000; i++ {
 			// For benchmarking 1MB keys
-			key := generateRandomString(36, false, false)
+			// key := generateRandomString(36, false, false)
 
+			key := uuid.NewString()
 			// For benchmarking get and del, keep track of keys inserted
 			keys = append(keys, key)
-
-			// key := uuid.NewString()
 			value := uuid.NewString()
 			start := time.Now()
 			_, err := engine.set(key, value)
@@ -227,30 +226,17 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return []byte("(invalid access key)"), nil
 		}
 
-		file, err := os.Open("benchmark-del.csv")
+		file, err := os.OpenFile("benchmark-del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", "benchmark-del.csv", err)
+		}
 		defer file.Close()
-		if err != nil {
-			fmt.Printf("Error opening file: %s", err)
-		}
-		metricsReader := csv.NewReader(file)
-		records, err := metricsReader.ReadAll()
-		if err != nil {
-			fmt.Println("Error reading CSV file:", err)
-			return nil, err
-		}
-
-		file_get, err := os.OpenFile("metrics_del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		if err != nil {
-			fmt.Printf("Error opening %s file: %s", "metrics_del.csv", err)
-		}
-		defer file_get.Close()
-		metricsWriter := csv.NewWriter(file_get)
+		metricsWriter := csv.NewWriter(file)
 		defer metricsWriter.Flush()
 
-		for i := 0; i < len(records); i++ {
-			key := records[i][2]
+		for i := 0; i < len(keys); i++ {
 			start := time.Now()
-			_, err := engine.del(key)
+			_, err := engine.del(keys[i])
 			if err != nil {
 				return nil, err
 			}
