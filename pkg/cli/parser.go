@@ -19,7 +19,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 	cmdType := args[0]
 
 	switch cmdType {
-	case "set":
+	case "set", "get-range":
 		if len(args) != 3 {
 			return usageMessage, nil
 		}

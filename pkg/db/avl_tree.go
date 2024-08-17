@@ -1,5 +1,7 @@
 package db
 
+import "fmt"
+
 type AVLTreeNode struct {
 	key    string
 	value  string
@@ -25,6 +27,13 @@ func (at *AVLTree) set(key string, value string) ([]byte, error) {
 func (at *AVLTree) del(key string) ([]byte, error) {
 	at.store = remove(at.store, key)
 	return []byte("OK"), nil
+}
+
+func (at *AVLTree) get_range(low string, high string) ([]byte, error) {
+	var results *[]string = &[]string{}
+	retrieveRange(at.store, low, high, results)
+	fmt.Println("The results are", *results)
+	return []byte("Done"), nil
 }
 
 func insert(node *AVLTreeNode, key string, value string) *AVLTreeNode {
@@ -131,6 +140,24 @@ func retrieve(node *AVLTreeNode, key string) string {
 		return retrieve(node.left, key)
 	} else {
 		return retrieve(node.right, key)
+	}
+}
+
+func retrieveRange(node *AVLTreeNode, low string, high string, results *[]string) {
+	if node == nil {
+		return
+	}
+
+	if low < node.key {
+		retrieveRange(node.left, low, high, results)
+	}
+
+	if low <= node.key && node.key <= high {
+		*results = append(*results, node.value)
+	}
+
+	if node.key < high {
+		retrieveRange(node.right, low, high, results)
 	}
 }
 

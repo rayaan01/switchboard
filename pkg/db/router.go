@@ -65,6 +65,22 @@ func router(accessKey string, args []string) ([]byte, error) {
 		}
 		return response, nil
 
+	case "get-range":
+		if len(args) != 3 {
+			return usageMessage, nil
+		}
+		low := args[1]
+		high := args[2]
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+		response, err := engine.get_range(low, high)
+		if err != nil {
+			return nil, err
+		}
+		return response, nil
+
 	case "create-access-key":
 		if len(args) != 2 {
 			return usageMessage, nil
