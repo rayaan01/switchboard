@@ -1,7 +1,5 @@
 package db
 
-import "fmt"
-
 type AVLTreeNode struct {
 	key    string
 	value  string
@@ -32,7 +30,6 @@ func (at *AVLTree) del(key string) ([]byte, error) {
 func (at *AVLTree) get_range(low string, high string) ([]byte, error) {
 	var results *[]string = &[]string{}
 	retrieveRange(at.store, low, high, results)
-	fmt.Println("The results are", *results)
 	return []byte("Done"), nil
 }
 

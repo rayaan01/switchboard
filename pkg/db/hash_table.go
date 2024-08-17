@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -41,6 +40,5 @@ func (ht *HashTable) get_range(low string, high string) ([]byte, error) {
 		}
 	}
 
-	fmt.Println("The results are", *results)
 	return []byte("Done"), nil
 }

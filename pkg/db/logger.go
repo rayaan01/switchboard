@@ -25,8 +25,23 @@ func logger_tps(tps int, writer *csv.Writer) {
 	writer.Write([]string{formattedTps})
 }
 
-func generateRandomString(n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+func logger_range_get(index int, duration float64, writer *csv.Writer) {
+	formattedIndex := fmt.Sprintf("%d", index)
+	executionTime := fmt.Sprintf("%.6f", duration)
+	writer.Write([]string{formattedIndex, executionTime})
+}
+
+func generateRandomString(n int, uppercase bool, digits bool) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyz")
+
+	if uppercase {
+		letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	}
+
+	if digits {
+		letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	}
+
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
