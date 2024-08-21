@@ -1,5 +1,10 @@
 package db
 
+import (
+	"fmt"
+	"strings"
+)
+
 type AVLTreeNode struct {
 	key    string
 	value  string
@@ -27,10 +32,11 @@ func (at *AVLTree) del(key string) ([]byte, error) {
 	return []byte("OK"), nil
 }
 
-func (at *AVLTree) get_range(low string, high string) ([]byte, error) {
+func (at *AVLTree) get_range(low string, high string) ([]byte, int, error) {
 	var results *[]string = &[]string{}
 	retrieveRange(at.store, low, high, results)
-	return []byte("Done"), nil
+	keyValuePairs := "[" + strings.Join(*results, ",") + "]"
+	return []byte(keyValuePairs), len(*results), nil
 }
 
 func insert(node *AVLTreeNode, key string, value string) *AVLTreeNode {
@@ -150,7 +156,8 @@ func retrieveRange(node *AVLTreeNode, low string, high string, results *[]string
 	}
 
 	if low <= node.key && node.key <= high {
-		*results = append(*results, node.value)
+		result := fmt.Sprintf("[%s, %s]", node.key, node.value)
+		*results = append(*results, result)
 	}
 
 	if node.key < high {

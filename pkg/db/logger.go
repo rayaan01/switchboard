@@ -25,10 +25,10 @@ func logger_tps(tps int, writer *csv.Writer) {
 	writer.Write([]string{formattedTps})
 }
 
-func logger_range_get(index int, duration float64, writer *csv.Writer) {
-	formattedIndex := fmt.Sprintf("%d", index)
+func logger_range_get(rangeQuery string, keysReturned int, duration float64, writer *csv.Writer) {
+	formattedKeysReturned := fmt.Sprintf("%d", keysReturned)
 	executionTime := fmt.Sprintf("%.6f", duration)
-	writer.Write([]string{formattedIndex, executionTime})
+	writer.Write([]string{rangeQuery, formattedKeysReturned, executionTime})
 }
 
 func generateRandomString(n int, uppercase bool, digits bool) string {

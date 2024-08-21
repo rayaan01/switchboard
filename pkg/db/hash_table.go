@@ -1,7 +1,9 @@
 package db
 
 import (
+	"fmt"
 	"sort"
+	"strings"
 )
 
 type HashTable struct {
@@ -26,7 +28,7 @@ func (ht *HashTable) del(key string) ([]byte, error) {
 	return []byte("OK"), nil
 }
 
-func (ht *HashTable) get_range(low string, high string) ([]byte, error) {
+func (ht *HashTable) get_range(low string, high string) ([]byte, int, error) {
 	keys := []string{}
 	var results *[]string = &[]string{}
 	for k := range ht.store {
@@ -36,9 +38,11 @@ func (ht *HashTable) get_range(low string, high string) ([]byte, error) {
 	sort.Strings(keys)
 	for _, k := range keys {
 		if k >= low && k <= high {
-			*results = append(*results, ht.store[k])
+			result := fmt.Sprintf("[%s, %s]", k, ht.store[k])
+			*results = append(*results, result)
 		}
 	}
 
-	return []byte("Done"), nil
+	keyValuePairs := "[" + strings.Join(*results, ",") + "]"
+	return []byte(keyValuePairs), len(*results), nil
 }

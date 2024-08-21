@@ -75,7 +75,8 @@ func router(accessKey string, args []string) ([]byte, error) {
 		if !ok {
 			return []byte("(invalid access key)"), nil
 		}
-		response, err := engine.get_range(low, high)
+		response, _, err := engine.get_range(low, high)
+
 		if err != nil {
 			return nil, err
 		}
@@ -105,7 +106,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return nil, io.EOF
 
 	case "benchmark-set":
-		filePath := "benchmark-set.csv"
+		filePath := "benchmark_set.csv"
 		file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		defer file.Close()
 		if err != nil {
@@ -118,10 +119,10 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return []byte("(invalid access key)"), nil
 		}
 		for i := 0; i < 1000; i++ {
-			// For benchmarking 1MB keys
-			// key := generateRandomString(36, false, false)
+			// For benchmarking custom random keys - Example: 1MB keys
+			key := generateRandomString(36, false, false)
 
-			key := uuid.NewString()
+			// key := uuid.NewString()
 			// For benchmarking get and del, keep track of keys inserted
 			keys = append(keys, key)
 			value := uuid.NewString()
@@ -147,9 +148,6 @@ func router(accessKey string, args []string) ([]byte, error) {
 			if err != nil {
 				return nil, err
 			}
-			if i <= 5 {
-				fmt.Println(keys[i])
-			}
 		}
 		return []byte("Done"), nil
 
@@ -159,7 +157,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return []byte("(invalid access key)"), nil
 		}
 
-		file, err := os.Open("benchmark-get.csv")
+		file, err := os.Open("benchmark_get.csv")
 		defer file.Close()
 		if err != nil {
 			fmt.Printf("Error opening file: %s", err)
@@ -171,7 +169,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return nil, err
 		}
 
-		file_get, err := os.OpenFile("benchmark-get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		file_get, err := os.OpenFile("benchmark_get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Printf("Error opening %s file: %s", "benchmark-get.csv", err)
 		}
@@ -193,29 +191,32 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-get-range":
-		filePath := "benchmark-get-range.csv"
+		filePath := "benchmark_get_range.csv"
 		file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		defer file.Close()
 		if err != nil {
 			fmt.Printf("Error opening %s file: %s", filePath, err)
 		}
 		metricsWriter := csv.NewWriter(file)
+		metricsWriter.Write([]string{"query", "keys_returned", "duration"})
 		defer metricsWriter.Flush()
+
 		engine, ok := StoreMapper[accessKey]
 		if !ok {
 			return []byte("(invalid access key)"), nil
 		}
 
-		ranges := [][]string{{"a", "k"}, {"c", "p"}, {"f", "g"}, {"h", "x"}, {"s", "y"}}
+		ranges := [][]string{{"a", "k"}, {"d", "v"}, {"p", "y"}, {"g", "m"}, {"w", "x"}}
 
 		for i := 0; i < len(ranges); i++ {
 			start := time.Now()
-			_, err = engine.get_range(ranges[i][0], ranges[i][1])
+			_, keys_returned, err := engine.get_range(ranges[i][0], ranges[i][1])
 			if err != nil {
 				return nil, err
 			}
 			duration := time.Since(start).Seconds() * 1e9
-			logger_range_get(i+1, duration, metricsWriter)
+			rangeQuery := strings.Join(ranges[i], "-")
+			logger_range_get(rangeQuery, keys_returned, duration, metricsWriter)
 		}
 
 		return []byte("Done"), nil
@@ -226,7 +227,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return []byte("(invalid access key)"), nil
 		}
 
-		file, err := os.OpenFile("benchmark-del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		file, err := os.OpenFile("benchmark_del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Printf("Error opening %s file: %s", "benchmark-del.csv", err)
 		}
@@ -247,7 +248,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-tps-set":
-		file_get, err := os.OpenFile("metrics_tps_set.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		file_get, err := os.OpenFile("benchmark_tps_set.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Printf("Error opening %s file: %s", "metrics_tps_set.csv", err)
 		}
@@ -269,7 +270,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-tps-get":
-		file_get, err := os.OpenFile("metrics_tps_get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		file_get, err := os.OpenFile("benchmark_tps_get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Printf("Error opening %s file: %s", "metrics_tps_get.csv", err)
 		}
@@ -292,7 +293,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-tps-del":
-		file_get, err := os.OpenFile("metrics_tps_del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		file_get, err := os.OpenFile("benchmark_tps_del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Printf("Error opening %s file: %s", "metrics_tps_del.csv", err)
 		}
