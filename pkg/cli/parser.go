@@ -50,7 +50,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 		c.accessKey = accessKey
 		return response, nil
 
-	case "benchmark-set", "benchmark-get", "benchmark-set-from-keys", "benchmark-get-range", "benchmark-del", "benchmark-tps-set", "benchmark-tps-get", "benchmark-tps-del":
+	case "benchmark-set", "benchmark-get", "benchmark-set-from-keys", "benchmark-get-range", "benchmark-del", "benchmark-tps-set", "benchmark-tps-get", "benchmark-tps-del", "log-key-value", "set-key-value-from-log", "verify-implementation":
 		if len(args) != 1 {
 			return usageMessage, nil
 		}

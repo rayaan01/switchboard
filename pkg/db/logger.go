@@ -31,6 +31,10 @@ func logger_range_get(rangeQuery string, keysReturned int, duration float64, wri
 	writer.Write([]string{rangeQuery, formattedKeysReturned, executionTime})
 }
 
+func log_key_value(key string, value string, writer *csv.Writer) {
+	writer.Write([]string{key, value})
+}
+
 func generateRandomString(n int, uppercase bool, digits bool) string {
 	var letters = []rune("abcdefghijklmnopqrstuvwxyz")
 

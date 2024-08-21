@@ -315,6 +315,103 @@ func router(accessKey string, args []string) ([]byte, error) {
 
 		return []byte("Done"), nil
 
+	case "log-key-value":
+		filePath := "log_key_value.csv"
+		file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		defer file.Close()
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", filePath, err)
+		}
+
+		metricsWriter := csv.NewWriter(file)
+		defer metricsWriter.Flush()
+		metricsWriter.Write([]string{"key", "value"})
+
+		for i := 0; i < 1000; i++ {
+			key := uuid.NewString()
+			value := uuid.NewString()
+			log_key_value(key, value, metricsWriter)
+		}
+
+		return []byte("Done"), nil
+
+	case "set-key-value-from-log":
+		filePath := "log_key_value.csv"
+		file, err := os.Open(filePath)
+		defer file.Close()
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", filePath, err)
+		}
+
+		reader := csv.NewReader(file)
+		records, err := reader.ReadAll()
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", filePath, err)
+		}
+
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+
+		for i, record := range records {
+			if i == 0 {
+				continue
+			}
+			key := record[0]
+			value := record[1]
+			_, err := engine.set(key, value)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return []byte("Done"), nil
+
+	case "verify-implementation":
+		filePath := "log_key_value.csv"
+		file, err := os.Open(filePath)
+		defer file.Close()
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", filePath, err)
+		}
+
+		reader := csv.NewReader(file)
+		records, err := reader.ReadAll()
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", filePath, err)
+		}
+
+		writeFilePath := "verify_implementation.csv"
+		writeFile, err := os.OpenFile(writeFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		defer file.Close()
+		if err != nil {
+			fmt.Printf("Error opening %s file: %s", filePath, err)
+		}
+
+		metricsWriter := csv.NewWriter(writeFile)
+		metricsWriter.Write([]string{"key", "value"})
+		defer metricsWriter.Flush()
+
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
+
+		for i, record := range records {
+			if i == 0 {
+				continue
+			}
+			key := record[0]
+			value, err := engine.get(key)
+			if err != nil {
+				return nil, err
+			}
+			log_key_value(key, string(value), metricsWriter)
+		}
+
+		return []byte("Done"), nil
+
 	default:
 		return usageMessage, nil
 	}
