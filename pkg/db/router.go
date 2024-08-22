@@ -120,9 +120,9 @@ func router(accessKey string, args []string) ([]byte, error) {
 		}
 		for i := 0; i < 1000; i++ {
 			// For benchmarking custom random keys - Example: 1MB keys
-			key := generateRandomString(36, false, false)
+			// key := generateRandomString(36, false, false)
 
-			// key := uuid.NewString()
+			key := uuid.NewString()
 			// For benchmarking get and del, keep track of keys inserted
 			keys = append(keys, key)
 			value := uuid.NewString()
@@ -132,7 +132,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 				return nil, err
 			}
 			duration := time.Since(start).Seconds() * 1e9
-			logger(i+1, duration, key, metricsWriter)
+			logger(i+1, key, duration, metricsWriter)
 		}
 		return []byte("Done"), nil
 
@@ -157,18 +157,6 @@ func router(accessKey string, args []string) ([]byte, error) {
 			return []byte("(invalid access key)"), nil
 		}
 
-		file, err := os.Open("benchmark_get.csv")
-		defer file.Close()
-		if err != nil {
-			fmt.Printf("Error opening file: %s", err)
-		}
-		metricsReader := csv.NewReader(file)
-		records, err := metricsReader.ReadAll()
-		if err != nil {
-			fmt.Println("Error reading CSV file:", err)
-			return nil, err
-		}
-
 		file_get, err := os.OpenFile("benchmark_get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			fmt.Printf("Error opening %s file: %s", "benchmark-get.csv", err)
@@ -177,15 +165,14 @@ func router(accessKey string, args []string) ([]byte, error) {
 		metricsWriter := csv.NewWriter(file_get)
 		defer metricsWriter.Flush()
 
-		for i := 0; i < len(records); i++ {
-			key := records[i][2]
+		for i := 0; i < len(keys); i++ {
 			start := time.Now()
-			_, err := engine.get(key)
+			_, err := engine.get(keys[i])
 			if err != nil {
 				return nil, err
 			}
 			duration := time.Since(start).Seconds() * 1e9
-			logger(i+1, duration, "", metricsWriter)
+			logger(i+1, keys[i], duration, metricsWriter)
 		}
 
 		return []byte("Done"), nil
@@ -242,7 +229,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 				return nil, err
 			}
 			duration := time.Since(start).Seconds() * 1e9
-			logger(i+1, duration, "", metricsWriter)
+			logger(i+1, "", duration, metricsWriter)
 		}
 
 		return []byte("Done"), nil
