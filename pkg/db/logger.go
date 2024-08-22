@@ -3,7 +3,6 @@ package db
 import (
 	"encoding/csv"
 	"fmt"
-	"math/rand"
 	"time"
 )
 
@@ -33,22 +32,4 @@ func logger_range_get(rangeQuery string, keysReturned int, duration float64, wri
 
 func log_key_value(key string, value string, writer *csv.Writer) {
 	writer.Write([]string{key, value})
-}
-
-func generateRandomString(n int, uppercase bool, digits bool) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyz")
-
-	if uppercase {
-		letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	}
-
-	if digits {
-		letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	}
-
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
 }

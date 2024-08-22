@@ -137,7 +137,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		}
 		return []byte("Done"), nil
 
-	case "benchmark-set-from-keys":
+	case "set-from-keys":
 		engine, ok := StoreMapper[accessKey]
 		if !ok {
 			return []byte("(invalid access key)"), nil
