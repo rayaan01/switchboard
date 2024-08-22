@@ -113,6 +113,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 			fmt.Printf("Error opening %s file: %s", filePath, err)
 		}
 		metricsWriter := csv.NewWriter(file)
+		metricsWriter.Write([]string{"index", "timestamp", "key", "duration"})
 		defer metricsWriter.Flush()
 		engine, ok := StoreMapper[accessKey]
 		if !ok {
