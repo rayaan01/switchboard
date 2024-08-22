@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// For keeping track of keys inserted - for benchmarking
 var keys = []string{}
 
 func router(accessKey string, args []string) ([]byte, error) {
@@ -121,8 +122,7 @@ func router(accessKey string, args []string) ([]byte, error) {
 		}
 		for i := 0; i < 1000; i++ {
 			// For benchmarking custom random keys - Example: 1MB keys
-			// key := generateRandomString(36, false, false)
-
+			// key := generateRandomString(1000000, true, true)
 			key := uuid.NewString()
 			// For benchmarking get and del, keep track of keys inserted
 			keys = append(keys, key)
@@ -153,18 +153,19 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-get":
-		engine, ok := StoreMapper[accessKey]
-		if !ok {
-			return []byte("(invalid access key)"), nil
-		}
-
-		file_get, err := os.OpenFile("benchmark_get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		filePath := "benchmark_get.csv"
+		file_get, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
-			fmt.Printf("Error opening %s file: %s", "benchmark-get.csv", err)
+			fmt.Printf("Error opening %s file: %s", filePath, err)
 		}
 		defer file_get.Close()
 		metricsWriter := csv.NewWriter(file_get)
 		defer metricsWriter.Flush()
+
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
 
 		for i := 0; i < len(keys); i++ {
 			start := time.Now()
@@ -210,18 +211,19 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-del":
-		engine, ok := StoreMapper[accessKey]
-		if !ok {
-			return []byte("(invalid access key)"), nil
-		}
-
-		file, err := os.OpenFile("benchmark_del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		filePath := "benchmark_del.csv"
+		file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
-			fmt.Printf("Error opening %s file: %s", "benchmark-del.csv", err)
+			fmt.Printf("Error opening %s file: %s", filePath, err)
 		}
 		defer file.Close()
 		metricsWriter := csv.NewWriter(file)
 		defer metricsWriter.Flush()
+
+		engine, ok := StoreMapper[accessKey]
+		if !ok {
+			return []byte("(invalid access key)"), nil
+		}
 
 		for i := 0; i < len(keys); i++ {
 			start := time.Now()
@@ -236,9 +238,10 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-tps-set":
-		file_get, err := os.OpenFile("benchmark_tps_set.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		filePath := "benchmark_tps_set.csv"
+		file_get, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
-			fmt.Printf("Error opening %s file: %s", "metrics_tps_set.csv", err)
+			fmt.Printf("Error opening %s file: %s", filePath, err)
 		}
 		defer file_get.Close()
 		metricsWriter := csv.NewWriter(file_get)
@@ -258,9 +261,10 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-tps-get":
-		file_get, err := os.OpenFile("benchmark_tps_get.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		filePath := "benchmark_tps_get.csv"
+		file_get, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
-			fmt.Printf("Error opening %s file: %s", "metrics_tps_get.csv", err)
+			fmt.Printf("Error opening %s file: %s", filePath, err)
 		}
 		defer file_get.Close()
 		metricsWriter := csv.NewWriter(file_get)
@@ -281,9 +285,10 @@ func router(accessKey string, args []string) ([]byte, error) {
 		return []byte("Done"), nil
 
 	case "benchmark-tps-del":
-		file_get, err := os.OpenFile("benchmark_tps_del.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		filePath := "benchmark_tps_del.csv"
+		file_get, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
-			fmt.Printf("Error opening %s file: %s", "metrics_tps_del.csv", err)
+			fmt.Printf("Error opening %s file: %s", filePath, err)
 		}
 		defer file_get.Close()
 		metricsWriter := csv.NewWriter(file_get)

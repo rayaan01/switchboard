@@ -8,8 +8,9 @@ func WelcomePrompt() {
 	fmt.Println("1. set [key] [value]")
 	fmt.Println("2. get [key]")
 	fmt.Println("3. del [key]")
-	fmt.Println("4. create-access-key {HashTable|AVLTree}")
-	fmt.Println("5. exit")
+	fmt.Println("4. get-range [lower_bound] [uppper_bound]")
+	fmt.Println("5. create-access-key {HashTable|AVLTree}")
+	fmt.Println("6. exit")
 	displayWrapper("")
 }
 
