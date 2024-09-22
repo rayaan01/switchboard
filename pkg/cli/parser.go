@@ -7,7 +7,6 @@ import (
 	"io"
 	"strings"
 
-	"switchboard/pkg/cli/utils"
 	"switchboard/pkg/common"
 	"switchboard/pkg/types"
 )
@@ -43,17 +42,12 @@ func (c *Client) parser(input string) ([]byte, error) {
 		}
 
 		accessKey := args[1]
-		response, err := utils.UpdateKeys(accessKey)
+		response, err := UpdateKeys(accessKey)
 		if err != nil {
 			return nil, err
 		}
 		c.accessKey = accessKey
 		return response, nil
-
-	case "benchmark-set", "benchmark-get", "set-from-keys", "benchmark-get-range", "benchmark-del", "benchmark-tps-set", "benchmark-tps-get", "benchmark-tps-del", "log-key-value", "set-key-value-from-log", "verify-implementation":
-		if len(args) != 1 {
-			return usageMessage, nil
-		}
 
 	case "exit":
 		return nil, io.EOF
@@ -63,7 +57,7 @@ func (c *Client) parser(input string) ([]byte, error) {
 	}
 
 	if c.accessKey == "EMPTY" {
-		accessKey, err := utils.GetAccessKey()
+		accessKey, err := GetAccessKey()
 		if err != nil {
 			return nil, err
 		}
