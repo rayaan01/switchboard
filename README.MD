@@ -1,3 +1,3 @@
 ### Switchboard
 
-#### An in-memory key-value store with configurable parameters for the storage engine and replication strategy.
+#### An configurable in-memory key-value store with support for hash tables and AVL trees.
